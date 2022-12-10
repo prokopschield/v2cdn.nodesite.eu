@@ -14,7 +14,8 @@
     "dependencies": {
         "doge-json": "^1.2.9",
         "nsblob-stream": "0.1.0-9",
-        "nscdn-csvdb": "0.1.0-14"
+        "nscdn-csvdb": "0.1.0-14",
+        "sunflake": "^0.6.0"
     },
     "devDependencies": {
         "@types/node": ">=16"

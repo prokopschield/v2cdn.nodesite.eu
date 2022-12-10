@@ -3,12 +3,13 @@ import http from "http";
 import https from "https";
 import { saturate, store } from "nsblob-stream";
 import { Database, descriptors } from "nscdn-csvdb";
+import { generateSunflake } from "sunflake";
 
 export async function main(port: number) {
     const database = new Database(".");
 
     const files = await database.getTable("files", {
-        id: descriptors.JsNumberType,
+        id: descriptors.JsStringType,
         name: descriptors.JsStringType,
         hash: descriptors.JsStringType,
         type: descriptors.JsStringType,
@@ -16,9 +17,7 @@ export async function main(port: number) {
         time: descriptors.JsNumberType,
     });
 
-    let [{ id }] = await files.find({}, "| wc -l");
-
-    id ||= 0;
+    const sunflake = generateSunflake();
 
     const server = http.createServer(async (request, response) => {
         try {
@@ -152,11 +151,11 @@ export async function main(port: number) {
                     name.match(/[a-f0-9]{64}$/gi) ||
                     (await files.find_first({ name })).length
                 ) {
-                    name = "file" + String(id + 1);
+                    name = BigInt(sunflake()).toString(24);
                 }
 
                 const object = {
-                    id: ++id,
+                    id: sunflake(),
                     hash: request_hash,
                     name,
                     size: length,
